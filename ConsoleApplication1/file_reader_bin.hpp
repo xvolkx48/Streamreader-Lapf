@@ -20,6 +20,7 @@ public:
 			return 0;
 		}
 		int i = 0;
+		fin >> noskipws;
 		for (i = 0; i < size; i++)
 		{
 			if (!(fin.peek() == EOF))
@@ -29,7 +30,7 @@ public:
 		}
 		return 0;
 	}
-	unsigned read(vector<unsigned char>&dat, unsigned size)
+	unsigned read(vector<unsigned char>& dat, unsigned size)
 	{
 		if (!fin)
 		{
