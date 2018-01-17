@@ -42,13 +42,6 @@ void file_reader::open()
 	}
 }
 
-//определение длины пакета по байтам
-int file_reader::size(char* data)
-{
-	int size;
-	memcpy(&size, data, sizeof(size));
-	return size;
-}
 
 //читаем указанное количество байт из потока файла
 char * file_reader::read(int size)
@@ -61,7 +54,7 @@ char * file_reader::read(int size)
 //читаем размер пакета (4 байта)
 int file_reader::PacketSize()
 {
-	unsigned char result=0;
+	unsigned int result=0;
 	file.read((char*)&result, 4);
 	return result;
 }

@@ -13,7 +13,6 @@ public:
 	
 	void open();
 
-	int size(char*);
 	char* read(int);
 	int PacketSize();
 
