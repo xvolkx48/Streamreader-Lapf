@@ -6,14 +6,12 @@
 
 using namespace std;
 
-/*
-string out_file = "out.ips";
-ofstream out(out_file, ios::app);
-*/
-
 int main()
 {
-
+	char* buf;
+	int size;
+	file_reader input_file("1.ips");
+	input_file.test();
 	getch();
 	return 0;
 }
