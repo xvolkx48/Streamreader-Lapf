@@ -1,4 +1,9 @@
 #pragma once
+#include "Packet.h";
+#include <iostream>;
+
+using namespace std;
+
 class Packet
 {
 public:
