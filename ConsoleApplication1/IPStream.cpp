@@ -1,4 +1,4 @@
-#include "file_reader.h"
+#include "IPStream.h"
 #include <fstream>
 #include "stdafx.h"
 #include <iostream>
@@ -6,30 +6,21 @@
 
 using namespace std;
 
-//конструктор класса
-file_reader::file_reader()
-{
-	path = "1.ips";
-	open();
-}
-
 //перегрузка конструктора
-file_reader::file_reader(string fileway)
+IPStream::IPStream(string filename)
 {
-	path = fileway;
-	open();
-
+	open(filename);
 }
 
 //попытка открытия файла
-void file_reader::open()
+void IPStream::open(string filename)
 {
 	try
 	{
-		file.open(path, ios::binary);
+		file.open(filename, ios::binary);
 		//получаем полный размер файла(с учетом первых 9 байт)
 		file.seekg(0, ios::end);
-		fullFiletSize = file.tellg();
+		fileSize = file.tellg();
 		
 		
 		file.seekg(9);
@@ -44,7 +35,7 @@ void file_reader::open()
 
 
 //читаем указанное количество байт из потока файла
-char * file_reader::read(int size)
+char * IPStream::getPacket(int size)
 {
 	char buff[256];
 	file.read((char*)&buff, size);
@@ -52,7 +43,7 @@ char * file_reader::read(int size)
 }
 
 //читаем размер пакета (4 байта)
-int file_reader::PacketSize()
+int IPStream::getPacketSize()
 {
 	unsigned int result=0;
 	file.read((char*)&result, 4);
@@ -60,15 +51,15 @@ int file_reader::PacketSize()
 }
 
 //деструктор класса
-file_reader::~file_reader()
+IPStream::~IPStream()
 {
 }
 
 
 
-void file_reader::test()
+void IPStream::test()
 {
-	cout << "\n"<<PacketSize()<<endl;
+	cout << "\n"<<getPacketSize()<<endl;
 	//cout << file.tellg();
 	//cout << "\n"<<fullFiletSize;
 }

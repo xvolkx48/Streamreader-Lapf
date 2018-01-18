@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <iostream>
-#include "file_reader.h"
+#include "IPStream.h"
 //#include <fstream>
 #include <conio.h>
 
@@ -10,8 +10,9 @@ int main()
 {
 	char* buf;
 	int size;
-	file_reader input_file("1.ips");
+	IPStream input_file("1.ips");
 	input_file.test();
+
 	getch();
 	return 0;
 }
