@@ -11,3 +11,4 @@ private:
 	char* data;
 };
 
+ostream &operator<<(ostream &os, const Packet &p);
