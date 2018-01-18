@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <fstream>
+#include "Packet.h"
 using namespace std;
 
 
@@ -13,7 +14,7 @@ public:
 	void getPacket(char* buf, int size);
 	int getPacketSize();
 	bool is_valid();
-	
+	Packet get();
 	void test();
 private:
 	int fileSize;

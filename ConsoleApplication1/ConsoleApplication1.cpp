@@ -3,15 +3,17 @@
 #include "IPStream.h"
 //#include <fstream>
 #include <conio.h>
+#include "Packet.h"
 
 using namespace std;
 
 int main()
 {
-
-	IPStream input_file("1.ips");
-	input_file.test();
-
+	IPStream ips("1.ips");
+	if (ips.is_valid()) {
+		Packet packet{ ips.get() };
+		cout << packet;
+	}
 	getch();
 	return 0;
 }

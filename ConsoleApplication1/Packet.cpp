@@ -1,37 +1,21 @@
 #include "Packet.h"
 #include "IPStream.h"
+#include <iostream>
 
-
-Packet::Packet(int s, char* d)
-{
-	size = s;
-	data = d;
-}
-
+using namespace std;
 
 Packet::~Packet()
 {
 }
 
-IPStream& operator>>(IPStream& ips, Packet& packet)
+
+ostream &operator<<(ostream &os, const Packet &p)
 {
-	int size = ips.getPacketSize();
-	char buffer[65535];
-	ips.getPacket(buffer, size);
+	int size = p.getSize();
+	char* data = p.getData();
 
+	os << "Size: " << size << "Data: ";
+	for (int i = 0; i<size; i++)
+		os << data[i];
+	return os;
 }
-
-//Packet packet;
-//IPStream ips("1.ips");
-//ips >> packet;
-
-//Packet IPStream::get()
-//{
-//	int size = getPacketSize();
-//	char buffer[65535];
-//	getPacket(buffer, size);
-//	return Packet{ size, buffer };
-//}
-//
-//IPStream ips("1.ips");
-//Packet packet{ ips.get() };

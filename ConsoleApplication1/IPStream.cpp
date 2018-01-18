@@ -82,3 +82,11 @@ void IPStream::checkHeader()
 		valid = false;
 	}
 }
+
+Packet IPStream::get()
+{
+	int size = getPacketSize();
+	char buffer[65535];
+	getPacket(buffer, size);
+	return Packet{ size, buffer };
+}
