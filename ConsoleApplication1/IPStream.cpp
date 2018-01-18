@@ -6,10 +6,12 @@
 
 using namespace std;
 
-//перегрузка конструктора
+//конструктор
 IPStream::IPStream(string filename)
 {
+	valid = true;
 	open(filename);
+	checkHeader();
 }
 
 //попытка открытия файла
@@ -21,25 +23,22 @@ void IPStream::open(string filename)
 		//получаем полный размер файла(с учетом первых 9 байт)
 		file.seekg(0, ios::end);
 		fileSize = file.tellg();
+		file.seekg(ios::beg);
 		
-		
-		file.seekg(9);
-		
-		cout << "\nFile open succes";
+		cout << "File open succes\n";
 	}
 	catch(...)
 	{
-		cout << "\nError, file not exist";
+		cout << "Error, file not exist\n";
+		valid = false;
 	}
 }
 
 
 //читаем указанное количество байт из потока файла
-char * IPStream::getPacket(int size)
-{
-	char buff[256];
-	file.read((char*)&buff, size);
-	return buff;
+void IPStream::getPacket(char* buff, int size)
+{	
+	file.read(buff, size);
 }
 
 //читаем размер пакета (4 байта)
@@ -62,4 +61,24 @@ void IPStream::test()
 	cout << "\n"<<getPacketSize()<<endl;
 	//cout << file.tellg();
 	//cout << "\n"<<fullFiletSize;
+}
+
+bool IPStream::is_valid()
+{
+	return valid;
+}
+
+void IPStream::checkHeader()
+{
+	char buff[9];
+	if (!is_valid())
+		return;
+	string header = "IP_STREAM";
+	getPacket(buff, 9);
+	string file_header = string(buff, sizeof(buff));
+
+	if (header != file_header) {
+		cerr << "Bad file format\n";
+		valid = false;
+	}
 }

@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-	char* buf;
+	char buf;
 	int size;
 	IPStream input_file("1.ips");
 	input_file.test();
