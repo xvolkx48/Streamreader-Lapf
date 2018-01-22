@@ -2,6 +2,7 @@
 #include <fstream>
 #include "stdafx.h"
 #include <iostream>
+#include <vector>
 
 
 using namespace std;
@@ -89,4 +90,34 @@ Packet IPStream::get()
 	char buffer[65535];
 	getPacket(buffer, size);
 	return Packet{ size, buffer };
+}
+
+vector<LapfPacket> IPStream::getLapfPacket(Packet pack)
+{
+	vector<LapfPacket> result = {};
+	char* data = pack.getData();
+	char smallPack[256];
+	int chanel =(data[0] & 0xFC) | ((data[1] & 0xF0) >> 4) ;
+	unsigned char size;
+	//берем с третьего байта, т.к. первые 2 это номер канала а 3-ий размер пакета
+	int position = 2;
+	if (pack.isLapfPacket())
+	{
+		while (((pack.getSize()-2)-position)>0)
+		{
+			size = data[position];
+			position++;
+			for (int i = position; i <= position+size; i++)
+			{
+				smallPack[i - position] = data[i];
+			}
+			position += size;
+			result.push_back(LapfPacket(chanel,size,smallPack));
+		}
+	}
+	else
+	{
+		
+	}
+	return result;
 }

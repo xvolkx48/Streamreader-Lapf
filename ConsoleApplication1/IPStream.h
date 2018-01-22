@@ -2,6 +2,8 @@
 #include <string>
 #include <fstream>
 #include "Packet.h"
+#include "LapfPacket.h"
+#include <vector>
 using namespace std;
 
 
@@ -15,6 +17,7 @@ public:
 	int getPacketSize();
 	bool is_valid();
 	Packet get();
+	vector<LapfPacket> getLapfPacket(Packet);
 	void test();
 private:
 	int fileSize;
