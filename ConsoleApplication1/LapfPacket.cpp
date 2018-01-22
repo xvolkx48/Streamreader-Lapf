@@ -5,7 +5,7 @@ LapfPacket::~LapfPacket()
 {
 }
 
-ostream& operator<<(ostream& os, LapfPacket pack)
+ostream& operator<<(ostream &os, const LapfPacket &pack)
 {
 	int size = pack.getSize();
 	char* data = pack.getData();
@@ -18,7 +18,7 @@ ostream& operator<<(ostream& os, LapfPacket pack)
 	return os;
 }
 
-ostream& operator<<(ostream& os, vector<LapfPacket> packets) 
+ostream& operator<<(ostream &os, const vector<LapfPacket> &packets) 
 {
 	for (int i = 0; i < packets.size(); i++)
 		os << packets[i];

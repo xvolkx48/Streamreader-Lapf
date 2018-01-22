@@ -11,14 +11,14 @@ public:
 	{ };
 	~LapfPacket();
 
-	int getChannel() { return channel; }
-	unsigned char getSize() { return size; }
-	char* getData() { return data; }
+	int getChannel() const { return channel; }
+	unsigned char getSize() const { return size; }
+	char* getData() const { return data; }
 private:
 	int channel;
 	int size;
 	char* data;
 };
 
-ostream& operator<<(ostream& os, LapfPacket pack);
-ostream& operator<<(ostream& os, vector<LapfPacket> packets);
+ostream& operator<<(ostream &os, const LapfPacket &pack);
+ostream& operator<<(ostream &os, const vector<LapfPacket> &packets);

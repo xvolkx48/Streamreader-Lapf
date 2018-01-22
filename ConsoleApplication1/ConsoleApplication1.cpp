@@ -15,8 +15,9 @@ int main()
 		throw runtime_error("Something wrong with ip stream");
 	while (!ips.end()) {
 		Packet packet = ips.get();
+		vector<LapfPacket>testList;
+		cout <<"Packet: \n"<< packet<<"\n";
 		if (packet.isLapfPacket()) {
-			vector<LapfPacket>testList;
 			packet.getLapfPacket(testList);
 			cout << testList;
 		}

@@ -50,7 +50,7 @@ void Packet::getLapfPacket(vector<LapfPacket>& packets)
 	{
 		lapf_size = data[position];
 		position++;
-		for (int i = position; i <= position + lapf_size; i++)
+		for (int i = position; i < position + lapf_size; i++)
 		{
 			smallPack[i - position] = data[i];
 		}
