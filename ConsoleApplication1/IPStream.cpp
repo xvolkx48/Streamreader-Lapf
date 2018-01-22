@@ -53,6 +53,7 @@ int IPStream::getPacketSize()
 //деструктор класса
 IPStream::~IPStream()
 {
+	file.close();
 }
 
 
@@ -62,6 +63,11 @@ void IPStream::test()
 	cout << "\n"<<getPacketSize()<<endl;
 	//cout << file.tellg();
 	//cout << "\n"<<fullFiletSize;
+}
+
+bool IPStream::end()
+{
+	return file.eof();
 }
 
 bool IPStream::is_valid()
@@ -74,10 +80,8 @@ void IPStream::checkHeader()
 	char buff[9];
 	if (!is_valid())
 		return;
-	string header = "IP_STREAM";
 	getPacket(buff, 9);
 	string file_header = string(buff, sizeof(buff));
-
 	if (header != file_header) {
 		cerr << "Bad file format\n";
 		valid = false;
@@ -92,32 +96,3 @@ Packet IPStream::get()
 	return Packet{ size, buffer };
 }
 
-vector<LapfPacket> IPStream::getLapfPacket(Packet pack)
-{
-	vector<LapfPacket> result = {};
-	char* data = pack.getData();
-	char smallPack[256];
-	int chanel =(data[0] & 0xFC) | ((data[1] & 0xF0) >> 4) ;
-	unsigned char size;
-	//берем с третьего байта, т.к. первые 2 это номер канала а 3-ий размер пакета
-	int position = 2;
-	if (pack.isLapfPacket())
-	{
-		while (((pack.getSize()-2)-position)>0)
-		{
-			size = data[position];
-			position++;
-			for (int i = position; i <= position+size; i++)
-			{
-				smallPack[i - position] = data[i];
-			}
-			position += size;
-			result.push_back(LapfPacket(chanel,size,smallPack));
-		}
-	}
-	else
-	{
-		
-	}
-	return result;
-}

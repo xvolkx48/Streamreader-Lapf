@@ -17,12 +17,13 @@ public:
 	int getPacketSize();
 	bool is_valid();
 	Packet get();
-	vector<LapfPacket> getLapfPacket(Packet);
 	void test();
+	bool end();
 private:
 	int fileSize;
 	ifstream file;
 	bool valid;
 	void checkHeader();
+	const string header = "IP_STREAM";
 };
 

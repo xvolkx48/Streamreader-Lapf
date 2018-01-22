@@ -11,14 +11,20 @@ Packet::~Packet()
 //проверка удовлетворяет ли пакет требования
 bool Packet::isLapfPacket()
 {
-	if (((data[0] & 0x01) == 0) && ((data[1] & 0x01) == 1))
-	{
-		return true;
-	}
-	else
-	{
+	if (((data[0] & 0x01) != 0) || ((data[1] & 0x01) != 1))  //Проверяем значение байтов EA
 		return false;
+	int cur_size_position = 2; //3-й байт - положение байта размера первого подпакета
+	int lapf_sum_size = data[cur_size_position]; //инициализация суммы размеров подпакетов размером первого подпакета
+	int inner_data_size = size - lapf_header_bytes - lapf_size_bytes - crc_bytes; //размер доступный для данных подпакета за вычетом всей служебной информации
+	while (lapf_sum_size < inner_data_size) {						//если меньше, значит должен быть ещё подпакет
+		cur_size_position += data[cur_size_position + 1];			//байт размера следующего подпакета
+		lapf_sum_size += data[cur_size_position];					//добавляем к сумме размер следующего подпакета
+		inner_data_size -= lapf_size_bytes;											//т.к. добавился один подпакет - уменьшаем кол-во доступных для данных байт на кол-во байт размера подпакета
 	}
+	if (lapf_sum_size != inner_data_size) //если суммарный размер больше чем, доступно в пакете, значит пакет некорректен
+		return false;
+	
+	return true;
 }
 
 ostream &operator<<(ostream &os, const Packet &p)
@@ -30,4 +36,25 @@ ostream &operator<<(ostream &os, const Packet &p)
 	for (int i = 0; i<size; i++)
 		os << data[i];
 	return os;
+}
+
+void Packet::getLapfPacket(vector<LapfPacket>& packets)
+{
+	
+	char smallPack[256];
+	int chanel = (data[0] & 0xFC) | ((data[1] & 0xF0) >> 4);
+	unsigned char lapf_size;
+	//берем с третьего байта, т.к. первые 2 это номер канала а 3-ий размер пакета
+	int position = 2;
+	while ((size - crc_bytes - position) > 0)
+	{
+		lapf_size = data[position];
+		position++;
+		for (int i = position; i <= position + lapf_size; i++)
+		{
+			smallPack[i - position] = data[i];
+		}
+		position += lapf_size;
+		packets.push_back(LapfPacket(chanel, lapf_size, smallPack));
+	}
 }
