@@ -79,6 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="IPStream.h" />
+    <ClInclude Include="LapfPacket.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -86,6 +87,7 @@
   <ItemGroup>
     <ClCompile Include="ConsoleApplication1.cpp" />
     <ClCompile Include="IPStream.cpp" />
+    <ClCompile Include="LapfPacket.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
