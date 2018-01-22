@@ -2,7 +2,6 @@
 #include <string>
 #include <fstream>
 #include "Packet.h"
-#include "LapfPacket.h"
 #include <vector>
 using namespace std;
 

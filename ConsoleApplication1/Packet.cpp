@@ -37,24 +37,3 @@ ostream &operator<<(ostream &os, const Packet &p)
 		os << data[i];
 	return os;
 }
-
-void Packet::getLapfPacket(vector<LapfPacket>& packets)
-{
-	
-	char smallPack[256];
-	int chanel = (data[0] & 0xFC) | ((data[1] & 0xF0) >> 4);
-	unsigned char lapf_size;
-	//берем с третьего байта, т.к. первые 2 это номер канала а 3-ий размер пакета
-	int position = 2;
-	while ((size - crc_bytes - position) > 0)
-	{
-		lapf_size = data[position];
-		position++;
-		for (int i = position; i < position + lapf_size; i++)
-		{
-			smallPack[i - position] = data[i];
-		}
-		position += lapf_size;
-		packets.push_back(LapfPacket(chanel, lapf_size, smallPack));
-	}
-}

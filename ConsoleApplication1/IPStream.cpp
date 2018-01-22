@@ -20,7 +20,7 @@ void IPStream::open(string filename)
 {
 	try
 	{
-		file.open(filename, ios::binary);
+		file.open(filename, ios::binary | ios::in);
 		//получаем полный размер файла(с учетом первых 9 байт)
 		file.seekg(0, ios::end);
 		fileSize = file.tellg();
