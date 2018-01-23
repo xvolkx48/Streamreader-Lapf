@@ -17,7 +17,7 @@ bool Packet::isLapfPacket()
 	int lapf_sum_size = data[cur_size_position]; //инициализация суммы размеров подпакетов размером первого подпакета
 	int inner_data_size = size - lapf_header_bytes - lapf_size_bytes - crc_bytes; //размер доступный для данных подпакета за вычетом всей служебной информации
 	while (lapf_sum_size < inner_data_size) {						//если меньше, значит должен быть ещё подпакет
-		cur_size_position += data[cur_size_position + 1];			//байт размера следующего подпакета
+		cur_size_position += data[cur_size_position] + 1;			//байт размера следующего подпакета
 		lapf_sum_size += data[cur_size_position];					//добавляем к сумме размер следующего подпакета
 		inner_data_size -= lapf_size_bytes;											//т.к. добавился один подпакет - уменьшаем кол-во доступных для данных байт на кол-во байт размера подпакета
 	}
