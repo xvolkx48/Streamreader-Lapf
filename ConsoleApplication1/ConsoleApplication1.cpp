@@ -4,6 +4,7 @@
 #include <vector>
 #include "LapfVault.h"
 #include "IPStream.h"
+#include<iomanip>
 
 using namespace std;
 
@@ -18,13 +19,21 @@ void writeDataToFile(unsigned short channel, unsigned char *bufer, int size)
 		throw runtime_error("Cannot open ouput file");
 
 	//
+	char a[2];
+	a[0] = channel & 0xFF;
+	a[1] = (channel & 0xFF00) >> 8;
+
+	ofs << setfill('0') << setw(4) << hex << channel;
+	ofs << setfill('0') << setw(8) << hex << size;
+
 	//запись канала и размера пакета
-	ofs << channel << size;
+	//ofs << setfill('0') << setw(2)<<*a << size;
 	//запись данных
 	for (int i = 0; i != size; i++)
 	{
 		ofs << bufer[i];
 	}
+	ofs.close();
 }
 shared_ptr<LapfVault>lapfVault(new LapfVault(&writeDataToFile));
 
@@ -32,23 +41,30 @@ shared_ptr<LapfVault>lapfVault(new LapfVault(&writeDataToFile));
 
 int main()
 {
-
-	unsigned char buf[65536];
-
-
-	IPStream ips(input_file);
-	if (!ips.is_valid())
-		throw runtime_error("Something wrong with ip stream");
-
-	ofstream ofs(output_file, ios::out | ios::binary);
-	ofs.write(file_header.c_str(), file_header.length());
-
-	while (!ips.end()) {
-		Packet packet{ ips.get() };
-		if (packet.isLapfPacket()) {
-			lapfVault->process(packet);
+	
+	try
+	{
+		IPStream ips(input_file);
+		if (!ips.is_valid())
+			throw runtime_error("Something wrong with ip stream");
+		ofstream ofs(output_file, ios::out | ios::binary);
+		ofs.write(file_header.c_str(), file_header.length());
+		ofs.close();
+		while (!ips.end()) {
+			Packet packet{ ips.get() };
+			if (packet.isLapfPacket()) {
+				lapfVault->process(packet);
+			}
 		}
+
 	}
+	catch(runtime_error &e)
+	{
+		cout << e.what();
+	}
+	
+	
+	
 	cout << "Press any key:";
 	getch();
 	return 0;
