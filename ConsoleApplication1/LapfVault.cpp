@@ -7,7 +7,7 @@ LapfVault::~LapfVault()
 unsigned short LapfVault::getChannel(Packet packet)
 {
 	char* data = packet.getData();
-	int channel = (data[0] & 0xFC) | ((data[1] & 0xF0) >> 4);
+	int channel = ((data[0] & 0xFC)<<2) | (((data[1] & 0xF0) >> 4));
 	return channel;
 }
 
