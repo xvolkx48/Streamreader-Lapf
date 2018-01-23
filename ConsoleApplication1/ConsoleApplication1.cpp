@@ -22,11 +22,18 @@ void writeDataToFile(unsigned short channel, unsigned char *bufer, int size)
 	char chanel_byte[2], size_byte[4];
 	
 	//перевод номера канала в массив байтов
+	//пока записываем файл без номера канала
+	/*
 	chanel_byte[0] = channel & 0xFF;
 	chanel_byte[1] = (channel & 0xFF00) >> 8;
+	*/
+	//chanel_byte[0] = channel & 0xFF;
+	//chanel_byte[1] = (channel & 0xFF00) >> 8;
 	//запись номера канала в файл в бинарном виде
-	ofs.write(chanel_byte, 2);
-
+	
+	//ofs.write(chanel_byte, 2);
+	//ofs << setfill('0')<<setw(2)<< hex<< channel;
+	
 	//перевод размера в массив байтов
 	size_byte[0] = size & 0xFF;
 	size_byte[1] = (size & 0xFF00) >> 8;
@@ -40,7 +47,16 @@ void writeDataToFile(unsigned short channel, unsigned char *bufer, int size)
 	{
 		ofs << bufer[i];
 	}
+	
+	//запись символов превода строки и возврата каретки 
+	/*
+	char b0d0a[2];
+	b0d0a[0] = 0x0d;
+	b0d0a[1] = 0x0a;
+	ofs.write(b0d0a, 2);
+	*/
 	ofs.close();
+
 }
 shared_ptr<LapfVault>lapfVault(new LapfVault(&writeDataToFile));
 
