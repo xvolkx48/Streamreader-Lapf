@@ -19,15 +19,22 @@ void writeDataToFile(unsigned short channel, unsigned char *bufer, int size)
 		throw runtime_error("Cannot open ouput file");
 
 	//
-	char a[2];
-	a[0] = channel & 0xFF;
-	a[1] = (channel & 0xFF00) >> 8;
+	char chanel_byte[2], size_byte[4];
+	
+	//перевод номера канала в массив байтов
+	chanel_byte[0] = channel & 0xFF;
+	chanel_byte[1] = (channel & 0xFF00) >> 8;
+	//запись номера канала в файл в бинарном виде
+	ofs.write(chanel_byte, 2);
 
-	ofs << setfill('0') << setw(4) << hex << channel;
-	ofs << setfill('0') << setw(8) << hex << size;
+	//перевод размера в массив байтов
+	size_byte[0] = size & 0xFF;
+	size_byte[1] = (size & 0xFF00) >> 8;
+	size_byte[2] = (size & 0xFF0000) >> 16;
+	size_byte[3] = (size & 0xFF000000) >> 32;
+	//запись размера пакета в файл в бинарном виде
+	ofs.write(size_byte,4);
 
-	//запись канала и размера пакета
-	//ofs << setfill('0') << setw(2)<<*a << size;
 	//запись данных
 	for (int i = 0; i != size; i++)
 	{
