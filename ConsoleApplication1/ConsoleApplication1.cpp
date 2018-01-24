@@ -47,14 +47,7 @@ void writeDataToFile(unsigned short channel, unsigned char *bufer, int size)
 	{
 		ofs << bufer[i];
 	}
-	
-	//запись символов превода строки и возврата каретки 
-	/*
-	char b0d0a[2];
-	b0d0a[0] = 0x0d;
-	b0d0a[1] = 0x0a;
-	ofs.write(b0d0a, 2);
-	*/
+
 	ofs.close();
 
 }
@@ -67,16 +60,17 @@ int main()
 	
 	try
 	{
-		IPStream ips(input_file);
-		if (!ips.is_valid())
+		IPStream ips(input_file);			//создаем объект класса IPStream для работы с файлом
+		if (!ips.is_valid())				//Проверка на ошибки(реализовано в классе IPStream)
 			throw runtime_error("Something wrong with ip stream");
-		ofstream ofs(output_file, ios::out | ios::binary);
-		ofs.write(file_header.c_str(), file_header.length());
-		ofs.close();
-		while (!ips.end()) {
-			Packet packet{ ips.get() };
-			if (packet.isLapfPacket()) {
-				lapfVault->process(packet);
+		ofstream ofs(output_file, ios::out | ios::binary);	//создаем и открываем файл для записи, флаги: ios::out - открытие для записи, ios::binary - открытие в бинарном виде
+		ofs.write(file_header.c_str(), file_header.length()); //записываем хедер файла
+		ofs.close();						//закрываем файл(для записи подпакетов используется свой поток)
+		//считываем данные до конца файла
+		while (!ips.end()) {				
+			Packet packet{ ips.get() };		//считываем пакет из файла
+			if (packet.isLapfPacket()) {	//проверяем удовлетворяет ли он условию
+				lapfVault->process(packet);	//читаем и записываем подпакеты
 			}
 		}
 

@@ -20,11 +20,11 @@ void IPStream::open(string filename)
 {
 	try
 	{
-		file.open(filename, ios::binary | ios::in);
+		file.open(filename, ios::binary | ios::in);		//команда для открытия файла флаги: ios::binary - открытие в бинарном виде ios::in - открытие для чтения
 		//получаем полный размер файла(с учетом первых 9 байт)
-		file.seekg(0, ios::end);
-		fileSize = file.tellg();
-		file.seekg(ios::beg);
+		file.seekg(0, ios::end);		//установка маркера в конец файла
+		fileSize = file.tellg();		//получение позиции маркера
+		file.seekg(ios::beg);			//возврат маркера в начало файла
 		
 		cout << "File open succes\n";
 	}
@@ -57,7 +57,7 @@ IPStream::~IPStream()
 }
 
 
-
+//тестовая функция для проверки
 void IPStream::test()
 {
 	cout << "\n"<<getPacketSize()<<endl;
@@ -65,16 +65,19 @@ void IPStream::test()
 	//cout << "\n"<<fullFiletSize;
 }
 
+//проверяем не закончился ли файл
 bool IPStream::end()
 {
 	return file.eof();
 }
 
+//проверка на наличие ошибок во время работы с файловым потоком
 bool IPStream::is_valid()
 {
 	return valid;
 }
 
+//проверяем соответствует ли заголовок файла заданному формату
 void IPStream::checkHeader()
 {
 	char buff[9];
@@ -88,11 +91,12 @@ void IPStream::checkHeader()
 	}
 }
 
+
+//функция читает пакет из потока и возвращает объект класса Packet
 Packet IPStream::get()
 {
-	int size = getPacketSize();
-	char buffer[65535];
-	getPacket(buffer, size);
-	return Packet{ size, buffer };
+	int size = getPacketSize();		//читаем размер пакета из потока
+	char buffer[65535];				//создаем массив байтов для записи данных из пакета
+	getPacket(buffer, size);		//читаем пакет из потока
+	return Packet{ size, buffer };	//возвращаем объект класса Packet
 }
-

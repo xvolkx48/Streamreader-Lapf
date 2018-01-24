@@ -27,6 +27,7 @@ bool Packet::isLapfPacket()
 	return true;
 }
 
+//перегрузка оператора
 ostream &operator<<(ostream &os, const Packet &p)
 {
 	int size = p.getSize();
