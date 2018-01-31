@@ -10,40 +10,32 @@ my::~my()
 }
 void my::work(unsigned char * buff, int size_buff)
 {
-	int N = 10;
-	int error = 0;
-	
-	int Len_index = 2;
-	
-	for (int k = 3; k < (size_buff - 2); k++)
+	unsigned char error = 0;
+	int dl = 2; //3-й байт - положение байта размера первого подпакета
+	int L_sum = buff[dl]; // сумма размеров подпакетов 
+	int full_size = size_buff - 2 - 1 - 2; //длина большого пакета
+	unsigned char vagon[65535];
+	unsigned char L_pac = buff[dl];
+
+	while (L_sum < full_size)//если меньше, значит должен быть ещё подпакет
 	{
-        if(error > N) return;
-		unsigned char L = buff[Len_index];
-		unsigned char bufer [65535];
-		bufer[0] = (L+2);
-	//	bufer[1] = id_n1;
-		//bufer[2] = id_n2;
-		if (Len_index <= (size_buff - 3 - 2))
+		for (int i = 0; i < L_pac; i++)
 		{
-
-			for (int f = 0; f <= L; f++)//какой знак?
-			{
-				int r = 3;
-				bufer[r] = buff[Len_index];
-				r++;
-			        Len_index++;
-             }
-
-			Fdata(bufer, L);
-		
+			int r = 0;
+			vagon[r] = buff[dl];
+			r++;
 		}
-		else
-		{
 
-			error++;
+		Fdata(vagon, L_pac);
 
-		}
-	      
+		dl += buff[dl] + 1;
+		L_pac = buff[dl];
+		L_sum += buff[dl];
+		full_size -= 1;
 	}
-	
+	if (L_sum != full_size)
+	{
+		error++;
+	}
+
 }

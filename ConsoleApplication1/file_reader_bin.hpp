@@ -20,7 +20,6 @@ public:
 			return 0;
 		}
 		int i = 0;
-		fin >> noskipws;
 		for (i = 0; i < size; i++)
 		{
 			if (!(fin.peek() == EOF))
