@@ -19,6 +19,7 @@ public:
 			cout << "\nerror" << endl;//проверка открытия файла
 			return 0;
 		}
+		fin >> noskipws;
 		int i = 0;
 		for (i = 0; i < size; i++)
 		{

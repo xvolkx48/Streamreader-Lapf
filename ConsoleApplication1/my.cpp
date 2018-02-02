@@ -20,12 +20,15 @@ void my::work(unsigned char * buff, int size_buff)
 	{
 		L_pac = buff[dl];
 		dl++;
+		//записываем 2 байта id канала в начало подпакета
+		vagon[0] = buff[0];
+		vagon[1] = buff[1];
 		for (int i = dl; i < dl+L_pac; i++)
 		{
 			vagon[i-dl] = buff[i];
 		}
-
-		Fdata(vagon, L_pac);
+		//увеличиваем размер подпакета на 2 байта(размер id канала)
+		Fdata(vagon, L_pac+2);
 
 		dl += L_pac;
 	}
