@@ -10,32 +10,23 @@ my::~my()
 }
 void my::work(unsigned char * buff, int size_buff)
 {
-	unsigned char error = 0;
-	int dl = 2; //3-й байт - положение байта размера первого подпакета
+	int dl = 2; //позиция чтения в пакете, берем 3-й байт - положение байта размера первого подпакета
 	int L_sum = buff[dl]; // сумма размеров подпакетов 
-	int full_size = size_buff - 2 - 1 - 2; //длина большого пакета
+	int full_size = size_buff - 4; //длина большого пакета(2 байта crc сумма, 2 байта id-канала)
 	unsigned char vagon[65535];
-	unsigned char L_pac = buff[dl];
+	unsigned char L_pac; //размер подпакета
 
-	while (L_sum < full_size)//если меньше, значит должен быть ещё подпакет
+	while ((full_size-dl) > 0)//если меньше, значит должен быть ещё подпакет
 	{
-		for (int i = 0; i < L_pac; i++)
+		L_pac = buff[dl];
+		dl++;
+		for (int i = dl; i < dl+L_pac; i++)
 		{
-			int r = 0;
-			vagon[r] = buff[dl];
-			r++;
+			vagon[i-dl] = buff[i];
 		}
 
 		Fdata(vagon, L_pac);
 
-		dl += buff[dl] + 1;
-		L_pac = buff[dl];
-		L_sum += buff[dl];
-		full_size -= 1;
+		dl += L_pac;
 	}
-	if (L_sum != full_size)
-	{
-		error++;
-	}
-
 }

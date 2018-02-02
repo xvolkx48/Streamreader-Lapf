@@ -29,8 +29,6 @@ void sort_lapf::SortLapf(unsigned char * buff, int size_buff)
 				(*Iter_sort)->work(buff, size_buff);
 				break;
 			}
-			else
-				continue;
 		}
 		if (Iter_sort == id_list.end())
 		{

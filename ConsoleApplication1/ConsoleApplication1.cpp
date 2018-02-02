@@ -11,14 +11,15 @@
 #include "sort_lapf.hpp"
 #include "my.h"
 using namespace std;
-
+/*
 vector<unsigned char>packet;
 vector<unsigned char>packet2;
+*/
 unsigned char buf[65536];
 
-
-string way_out = "out.ips";
-ofstream out(way_out, ios::app);
+const string output_file = "out.ips";
+const string input_file = "1.ips";
+const string file_header = "IP_STREAM";
 	
 
 
@@ -37,15 +38,14 @@ int main()
 {
 
 
-	file_reader_ips qw("1.ips");
-	short id = 0;
+	file_reader_ips qw(input_file);
 	int size_buf = 0;
-	way_out = "IP_STREAM";
-	out.write(way_out.c_str(), way_out.length());
+	ofstream ofs(output_file, ios::out | ios::binary);
+	ofs.write(file_header.c_str(), file_header.length());
+	ofs.close();
 	while (qw.eof())
 	{
 		size_buf = qw.read(buf);
 		Lapf_list->SortLapf(buf, size_buf);
-
 	}
 }
