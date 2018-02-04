@@ -25,7 +25,7 @@ void my::work(unsigned char * buff, int size_buff)
 		vagon[1] = buff[1];
 		for (int i = dl; i < dl+L_pac; i++)
 		{
-			vagon[i-dl] = buff[i];
+			vagon[i-dl+2] = buff[i];
 		}
 		//увеличиваем размер подпакета на 2 байта(размер id канала)
 		Fdata(vagon, L_pac+2);
