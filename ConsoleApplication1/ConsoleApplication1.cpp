@@ -16,26 +16,18 @@ const string file_header = "IP_STREAM";
 	
 
 
-void LapF_pack_wrt(unsigned char *bufer, int L)
+void LapF_pack_wrt(unsigned char* bufer, int L)
 {
 
 	ofstream ofs(output_file, ios::app | ios::binary);
 	if (!ofs)
 		throw runtime_error("Cannot open ouput file");
-	char size_byte[4];
 
-	size_byte[0] = L & 0xFF;
-	size_byte[1] = (L & 0xFF00) >> 8;
-	size_byte[2] = (L & 0xFF0000) >> 16;
-	size_byte[3] = (L & 0xFF000000) >> 32;
+	char* size = reinterpret_cast<char*>(&L);
+	ofs.write(size, 4);
 
-	ofs.write(size_byte, 4);
-
-	//запись данных
-	for (int i = 0; i != L; i++)
-	{
-		ofs << bufer[i];
-	}
+	const char* p = reinterpret_cast<const char*>(bufer);
+	ofs.write(p, L);
 
 	ofs.close();
 }
