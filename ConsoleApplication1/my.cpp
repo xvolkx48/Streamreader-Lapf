@@ -1,6 +1,8 @@
 #include"my.h"
 #include "stdafx.h"
-#include"sort_lapf.hpp"
+#include "sort_lapf.hpp"
+#include "Packet.h"
+
 my::my(TDataReady1 FDdata)
 {
 	Fdata = FDdata;
@@ -18,6 +20,7 @@ void my::work(unsigned char * buff, int size_buff)
 
 	while ((full_size-dl) > 0)//если меньше, значит должен быть ещё подпакет
 	{
+		Packet pac;
 		L_pac = buff[dl];
 		dl++;
 		//записываем 2 байта id канала в начало подпакета
@@ -29,6 +32,8 @@ void my::work(unsigned char * buff, int size_buff)
 		}
 		//увеличиваем размер подпакета на 2 байта(размер id канала)
 		Fdata(vagon, L_pac+2);
+
+		pac.createPacketVector(vagon, L_pac+2);		//передаем пакет на обработку
 
 		dl += L_pac;
 	}
