@@ -11,6 +11,7 @@ vector<Packet> result;					//записываем массив результатов в данную переменную
 vector<Packet>::iterator result_it;		
 
 
+vector < pair<unsigned char, bool>> status;	//хренение статуса канала
 Packet::Packet()
 {
 }
@@ -26,26 +27,32 @@ void Packet::createPacketVector(unsigned char * buff, int size)
 	unsigned char ch;						//номер канала
 	vector<unsigned char> pacData;			//данные в подпакете
 	ch = buff[3];							//считываем номер канала
+	Packet new_pac;
+	int index;
 	//проверяем на команду записи
 	if ((buff[8] == 0xFF) && (buff[9] == 0x03) && (buff[10] == 0x43))
 	{	
 		//ищем данный канал в списке уже открытых на запись, и если он уже открыт, то ничего не делаем
 		//если он был уже закрыт или не найден, то создаем новый результат
-		for (result_it = result.begin(); result_it != result.end(); result_it++)
+		for ( index = 0; index < status.size(); index++)
 		{
-			if (((*result_it).chanel == ch)&&(open))
+			if (status[index].first == ch)
 			{
 				break;
 			}
 		}
-		//получаем номер
-		if (result_it == result.end())
+		if (index == status.size())
 		{
-			Packet new_pac;
+			//добавляем канал в список для монитооринга статуса
+			status.push_back({ ch, false });
+		}
+		if (!status[index].second)
+		{
+			//получаем номер
 			new_pac.chanel = ch;
 			int i = 11;
-			string num="";
-			while (i<=size-2)
+			string num = "";
+			while (i <= size - 2)
 			{
 				switch (buff[i])
 				{
@@ -96,9 +103,11 @@ void Packet::createPacketVector(unsigned char * buff, int size)
 				}
 				i++;
 			}
+			status[index].second = true;
 			new_pac.number = num;
 			new_pac.open = true;
 			result.push_back(new_pac);		//записываем новый результат в вектор
+
 		}
 	}
 	else
@@ -107,11 +116,19 @@ void Packet::createPacketVector(unsigned char * buff, int size)
 		if ((buff[8] == 0xFF) && (buff[9] == 0x13) && (buff[10] == 0xFB))
 		{
 			//ищем по номеру канала и если он открыт то закрываем
-			for (result_it = result.begin(); result_it != result.end(); result_it++)
+			for (index = 0; index < status.size(); index++)
 			{
-				if (((*result_it).chanel == ch) && (open))
+				if (status[index].first == ch)
 				{
-					(*result_it).open = false;
+					status[index].second = false;
+					for (result_it = result.begin(); result_it != result.end(); result_it++)
+					{
+						if (((*result_it).chanel == ch) && ((*result_it).open))
+						{
+							(*result_it).open = false;
+							break;
+						}
+					}
 					break;
 				}
 			}
@@ -120,19 +137,46 @@ void Packet::createPacketVector(unsigned char * buff, int size)
 		if (buff[6] == 0x60)
 		{
 			int i = 8;
-			while (i <= size - 2)
+			while (i < size - 2)
 			{
 				unsigned char item = buff[i];
 				pacData.push_back(item);
 				i++;
 			}
+			for (index = 0; index < status.size(); index++)
+			{
+				if ((status[index].first == ch) && (status[index].second))
+				{
+					for (result_it = result.begin(); result_it != result.end(); result_it++)
+					{
+						if (((*result_it).chanel == ch) )
+						{
+							new_pac.chanel = (*result_it).chanel;
+							new_pac.number = (*result_it).number;
+							new_pac.open = true;
+							if ((*result_it).open)
+							{
+								//обновляем данные в результате
+								(*result_it).data.insert((*result_it).data.end(), pacData.begin(), pacData.end());
+								break;
+							}
+						}
+					}
+					if (result_it == result.end())
+					{
+						new_pac.data = pacData;
+						result.push_back(new_pac);
+					}
+				}
+			}
+		}
+		else
+		{
 			for (result_it = result.begin(); result_it != result.end(); result_it++)
 			{
-				if (((*result_it).chanel == ch) && (open))
+				if (((*result_it).chanel == ch) && (*result_it).open && ((*result_it).data.size()>0))
 				{
-					//обновляем данные в результате
-					(*result_it).data.insert((*result_it).data.end(), pacData.begin(), pacData.end());
-					break;
+					(*result_it).open = false;
 				}
 			}
 		}

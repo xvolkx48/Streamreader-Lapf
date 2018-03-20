@@ -9,7 +9,7 @@ public:
 	Packet();
 	unsigned char chanel;		//номер канала(3-байт начиная с 0)
 	string number;				//имя файла
-	vector<unsigned char> data;		//содержимое пакета
+	vector<unsigned char> data;	//содержимое пакета
 	bool open;					//открыт для записи пока не встретится 8 9 10 байты FF 13 FB
 	void createPacketVector(unsigned char * buff, int size);	//функция обработки и накопления вектора данных
 	virtual ~Packet();
