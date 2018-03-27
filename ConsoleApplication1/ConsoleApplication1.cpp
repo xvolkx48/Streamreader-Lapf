@@ -12,8 +12,8 @@ using namespace std;
 
 unsigned char buf[65536];
 
-const string output_file = "out.ips";
-const string input_file = "1.ips";
+
+const string default_file = "1.ips";
 const string file_header = "IP_STREAM";
 	
 
@@ -35,8 +35,9 @@ void LapF_pack_wrt(unsigned char* bufer, int L)
 }
 shared_ptr<sort_lapf>Lapf_list(new sort_lapf(&LapF_pack_wrt));
 
-int main()
+int main(int argc, char *argv[])
 {
+	std::string input_file = (argc > 1) ? argv[1] : default_file;
 	file_reader_ips qw(input_file);
 	int size_buf = 0;
 	//ofstream ofs(output_file, ios::out | ios::binary);
