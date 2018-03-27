@@ -5,6 +5,32 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <windows.h>
+
+
+//вспомогательная функция для получения текущего времени по заданному форматуж
+string get_time(const char* format)
+{
+	//переменные для получения даты и времени в формате строки
+	time_t rawtime;
+	struct tm timeinfo;
+	char buffer[80];
+
+	time(&rawtime);
+	localtime_s(&timeinfo, &rawtime);
+
+	strftime(buffer, 80, format, &timeinfo);
+	std::string cur_time = buffer;							
+	return cur_time;
+}
+
+LPCWSTR format_for_winapi(std::string str)
+{
+	unsigned int buff_size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);
+	WCHAR* buff = new WCHAR[buff_size];
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, buff, buff_size);
+	return buff;
+}
 
 
 vector<Packet> result;					//записываем массив результатов в данную переменную
@@ -187,40 +213,52 @@ void Packet::createPacketVector(unsigned char * buff, int size)
 //запись результатов работы в файлы
 void Packet::writeFiles()
 {
-	vector < pair<unsigned char, int>> channels;								//счетчик векторов для каждого канала начинается с 0
+	struct output_form{
+		unsigned char ch;
+		string folder;
+		int count;
+		output_form(unsigned char c, string f, int n) : ch{ c }, folder{ f }, count{ n } {}
+	};
+	vector <output_form> channels;								//счетчик векторов для каждого канала начинается с 0
 	//начинаем перебирать все результаты
 	for (result_it = result.begin(); result_it != result.end(); result_it++)
 	{
 		ostringstream filename;								//имя файла
-		int count = 0;										//количество векторов для текущего канала начинается с 0
+		std::string folder;
+		int counter = 0;										//количество векторов для текущего канала начинается с 0
 		//если данный канал уже встречался и найден в счетчике то увеличиваем его значение на 1 и отдаем это значение count
 		for (int i = 0; i < channels.size(); i++) {
-			if (channels[i].first= (*result_it).chanel) {
-				count = ++channels[i].second;
+			if (channels[i].ch == (*result_it).chanel) {
+				counter = ++channels[i].count;
+				folder = channels[i].folder;
 			}
 		}
-		//если данный канал встречается первый раз то создаем новый счетчик для него
-		if(count==0) 
-			channels.push_back({ (*result_it).chanel, 0 });
 
-		//переменные для получения даты и времени в формате строки
-		time_t rawtime;
-		struct tm timeinfo;
-		char buffer[80];
+		//если данный канал встречается первый раз то создаем новый счетчик и каталог для него
+		if (counter == 0) {
+			std::string cur_time = get_time("%d-%m-%y-%H-%M-%S"); //время для имени папки в заданном формате
+			ostringstream foldername;
+			foldername << "out-" << (int)(*result_it).chanel << "-" << cur_time;
+			folder = foldername.str();
+			if (!CreateDirectory(format_for_winapi(folder), NULL))
+				throw runtime_error("Cannot create folder");
+			output_form temp{ (*result_it).chanel, folder, 0 };
+			channels.push_back( temp );
+		}
 
-		time(&rawtime);
-		localtime_s(&timeinfo, &rawtime);
 
-		strftime(buffer, 80, "%d_%m_%y_%H_%M_%S_", &timeinfo);
-		std::string cur_time = buffer;							//записываем текущее дату и время в строку
+		
+		std::string cur_time = get_time("%d-%m-%y-%H-%M-%S_"); //время для имени файла в заданном формате
+							
+		filename << folder << "\\";
 		filename << cur_time;									//добавляем дату и время в начало имени файла
 		filename << (*result_it).number;						//добавляем полученный номер к имени файла
 		//по счетчику получаем расширение для файла
-		if (count < 10)
+		if (counter < 10)
 			filename << ".00";
-		else if (count < 100)
+		else if (counter < 100)
 			filename << ".0";
-		filename << count;
+		filename << counter;
 		
 		ofstream ofs( filename.str(), ios::out | ios::binary );	//создаем и открываем на запись в бинарном виде файл
 		if (!ofs)
